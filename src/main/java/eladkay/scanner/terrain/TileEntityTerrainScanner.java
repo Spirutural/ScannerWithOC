@@ -18,6 +18,14 @@ import net.minecraft.world.WorldServer;
 import net.minecraftforge.fluids.BlockFluidBase;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
+import li.cil.oc.api.Network;
+import li.cil.oc.api.machine.Arguments;
+import li.cil.oc.api.machine.Callback;
+import li.cil.oc.api.machine.Context;
+import li.cil.oc.api.network.*;
+import li.cil.oc.api.prefab.TileEntityEnvironment;
+
+
 import javax.annotation.Nonnull;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
@@ -37,6 +45,7 @@ public class TileEntityTerrainScanner extends BaseTE implements ITickable {
     public int maxY = 255;
     public UUID placer;
     public String placerName;
+    public boolean finished = false;
 
     @Nonnull
     public BlockPos getPosStart() {
@@ -82,10 +91,17 @@ public class TileEntityTerrainScanner extends BaseTE implements ITickable {
 
     public TileEntityTerrainScanner() {
         super(MAX);
+
+        node = Network.newNode(this, Visibility.Network)
+            .withConnector()
+            .withComponent("scanner")
+            .create();
+
     }
 
     public void activate() {
         changeState(true);
+        finished = false;
         current.setPos(getPosStart().getX(), 0, getPosStart().getZ());
     }
 
@@ -210,6 +226,7 @@ public class TileEntityTerrainScanner extends BaseTE implements ITickable {
 
             }
             if (current.getY() > maxY) {
+                finished = true;
                 if (biomeScanner != null && biomeScanner.biomeScanner.peek() != null) {
                     BlockPos pos = biomeScanner.pop();
                     if (pos == null) throw new WtfException("How can this be???");
@@ -244,4 +261,59 @@ public class TileEntityTerrainScanner extends BaseTE implements ITickable {
         }
         return false;
     }
+
+
+private boolean isPosValid(int x, int z) {
+    BlockPos pos = getPos();
+    return Config.maxQueueRange == 0 || Math.abs((pos.getX() - x)) + Math.abs(pos.getZ() - z) <= Config.maxQueueRange;
+}
+
+@Callback
+public Object[] isEnabled(Context context, Arguments args){
+    return new Object[]{on};
+}
+
+@Callback
+public Object[] getEnergyStored(Context context, Arguments args){
+    return new Object[]{container.getEnergyStored()};
+}
+
+@Callback
+public Object[] setScannerPosition(Context context, Arguments args){
+    MutableBlockPos newPos = new MutableBlockPos(args.checkInteger(0), args.checkInteger(1), args.checkInteger(2));
+    boolean validPos = isPosValid(newPos.getX(), newPos.getZ());
+    if(validPos){
+        current = newPos;
+        posStart = new BlockPos(newPos.getX(), newPos.getY(), newPos.getZ());
+        changeState(false);
+    }
+    return new Object[]{validPos};
+}
+
+@Callback
+public Object[] setScannerSpeed(Context context, Arguments args){
+    int newSpeed = args.checkInteger(0);
+    if(newSpeed > 0 && newSpeed < Config.maxSpeedup){
+        speedup = newSpeed;
+    }
+    return new Object[]{speedup};
+}
+
+@Callback
+public Object[] activateScanning(Context context, Arguments args){
+    activate();
+    return null;
+}
+
+@Callback
+public Object[] deactivateScanning(Context context, Arguments args){
+    deactivate();
+    return null;
+}
+
+@Callback
+public Object[] isFinished(Context context, Arguments args){
+    return new Object[]{finished};
+}
+
 }

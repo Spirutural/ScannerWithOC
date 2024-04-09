@@ -34,8 +34,8 @@ minecraft {
 }
 
 repositories {
-    maven { url "http://maven.mcmoddev.com" }
-    maven { url "http://maven.tehnut.info" }
+  //  maven { url "http://maven.mcmoddev.com" }
+    maven { url "http://maven.tehnut.info/maven" }
     maven { url "http://chickenbones.net/maven/" }
     maven {
         url = "http://maven.bluexin.be/repository/snapshots/"
@@ -68,7 +68,7 @@ dependencies {
     //deobfCompile "com.feed_the_beast.mods:FTBLib:5.4.1.87"
     compile files("libs/FTBLib-5.4.7.2.jar")
     compile files("libs/FTBUtilities-5.4.1.130.jar")
-    deobfCompile "mcp.mobius.waila:Hwyla:1.8.26-B41_1.12.2"
+    // deobfCompile "mcp.mobius.waila:Hwyla:1.8.26-B41_1.12.2"
     //compile 'LatMod:FTBLib:1.1x-3.6.5:api'
     deobfCompile "cofh:RedstoneFlux:1.12-2.1.0.6:universal"
     deobfCompile("CraftTweaker2:CraftTweaker2-MC1120-Main:1.12-4.1.13.514")
@@ -78,6 +78,8 @@ dependencies {
     //compile "EnderIO:EnderIO:1.10.2-3.1.156"
     compile "net.darkhax.tesla:Tesla-1.12.2:1.0.63"
     compile "com.teamwizardry.librarianlib:librarianlib-1.12:4.0-SNAPSHOT:deobf"
+    implementation files('libs/Hwyla-1.8.26-B41_1.12.2.jar')
+    implementation files('libs/OpenComputers-MC1.12.2-1.7.5.192.jar')
 
 }
 

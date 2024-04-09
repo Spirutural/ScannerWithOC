@@ -1,11 +1,11 @@
 package eladkay.scanner.misc;
 
 import cofh.redstoneflux.api.IEnergyReceiver;
+import li.cil.oc.api.prefab.TileEntityEnvironment;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -14,7 +14,7 @@ import net.minecraftforge.energy.CapabilityEnergy;
 
 import javax.annotation.Nullable;
 
-public class BaseTE extends TileEntity implements IEnergyReceiver {
+public class BaseTE extends TileEntityEnvironment implements IEnergyReceiver {
     public BaseEnergyContainer container;
     private int max;
 
